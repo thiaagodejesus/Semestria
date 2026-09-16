@@ -1,0 +1,109 @@
+[
+  {
+    "name": "Disciplina",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Conhecer nome, código e créditos da disciplina.",
+      "Conhecer a carga horária total em horas.",
+      "",
+      "Manter a lista de avaliações vinculadas.",
+      "Manter o registro de faltas do aluno.",
+      "Calcular a nota final obtida somando as avaliações.",
+      "Calcular a porcentagem de faltas com base na carga horária.",
+      "Determinar a situação final do aluno (Aprovado, Reprovado por Nota, Reprovado por Infrequência)."
+    ],
+    "collaborators": [
+      "Avaliacao",
+      "Horario"
+    ]
+  },
+  {
+    "name": "Avaliacao",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Conhecer o nome descritivo (ex: \"Prova 1\", \"Trabalho Final\").",
+      "Conhecer o valor total (pontuação máxima).",
+      "Conhecer a nota obtida pelo aluno.",
+      "Conhecer a data limite de entrega/realização.",
+      "Validar se a nota obtida não excede o valor máximo da avaliação.",
+      "Indicar se a avaliação já foi realizada ou se é uma estimativa."
+    ],
+    "collaborators": [
+      "Disciplina",
+      "ValidadorAcademico"
+    ]
+  },
+  {
+    "name": "Semestre",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Conhecer o identificador do período (ex: \"2026/2\").",
+      "Armazenar o conjunto de disciplinas cursadas no período.",
+      "Adicionar e remover disciplinas da grade semestral.",
+      "Calcular a soma total de créditos cursados.",
+      "Calcular a Projeção da NSG (Nota Semestral Global ponderada por créditos).",
+      "Identificar matérias que apresentam conflito de horários entre si."
+    ],
+    "collaborators": [
+      "Disciplina",
+      "Horario"
+    ]
+  },
+  {
+    "name": "Horario",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Conhecer o dia da semana da aula.",
+      "Conhecer o horário de início (hora e minuto).",
+      "Conhecer o horário de término (hora e minuto).",
+      "Conhecer a sala ou prédio onde a aula ocorre.",
+      "Verificar se colide/sobrepõe com outro intervalo de horário."
+    ],
+    "collaborators": [
+      "Disciplina",
+      "Semestre"
+    ]
+  },
+  {
+    "name": "AlertaAcademico",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Conhecer os limites regulamentares da universidade (ex: 25% de faltas, 60 pontos de aprovação).",
+      "Monitorar a proximidade do teto de ausências de cada disciplina.",
+      "Gerar avisos de risco de infrequência quando as faltas atingirem 80% do limite.",
+      "Calcular a pontuação mínima que o aluno precisa tirar nas provas restantes para atingir 60 pontos.",
+      "Emitir avisos de risco iminente de reprovação por nota."
+    ],
+    "collaborators": [
+      "Disciplina",
+      "Avaliacao"
+    ]
+  },
+  {
+    "name": "RelatorioSemestral",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Coletar os dados consolidados de todas as matérias do semestre.",
+      "Formatar o resumo da grade horária semanal para exibição no terminal.",
+      "Gerar o extrato de notas discriminado por disciplina e avaliação.",
+      "Apresentar o histórico de faltas versus carga horária permitida.",
+      "Exportar a visão geral do aluno com cálculo final e projeção de NSG."
+    ],
+    "collaborators": [
+      "Semestre",
+      "AlertaAcademico"
+    ]
+  }
+]
