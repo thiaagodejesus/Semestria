@@ -26,6 +26,14 @@ namespace semestria {
  *
  * Colaboradores: Semestre, AlertaAcademico.
  */
+// Esta classe só cuida da APRESENTAÇÃO: ela não faz contas novas.
+// Pede os números prontos ao Semestre, às Disciplinas e ao
+// AlertaAcademico e se preocupa apenas em escrevê-los de forma organizada.
+//
+// Exemplo de uso:
+//     RelatorioSemestral relatorio(semestre);
+//     relatorio.gerarVisaoGeral(std::cout);   // mostra na tela
+//     relatorio.exportar("relatorio.txt");    // salva em arquivo
 class RelatorioSemestral {
 public:
     /**
@@ -35,6 +43,12 @@ public:
      */
     explicit RelatorioSemestral(const Semestre& semestre,
                                 const AlertaAcademico& alerta = AlertaAcademico());
+
+    // Por que os métodos recebem "std::ostream& saida"?
+    // std::ostream é qualquer "lugar para onde se pode escrever texto".
+    // std::cout (a tela) é um ostream, e um arquivo aberto com
+    // std::ofstream também é. Assim, o mesmo método serve tanto para
+    // mostrar no terminal quanto para gravar em arquivo, sem repetir código.
 
     /**
      * @brief Escreve a grade horária semanal, organizada por dia.
@@ -83,6 +97,10 @@ public:
     void exportar(const std::string& caminhoArquivo) const;
 
 private:
+    // Guardamos uma REFERÊNCIA ao semestre (o "&"), e não uma cópia. Assim
+    // o relatório sempre mostra os dados mais recentes e não duplica
+    // tudo na memória. O cuidado é que o Semestre precisa continuar
+    // existindo enquanto este relatório for usado.
     const Semestre& semestre_;  ///< Semestre apresentado.
     AlertaAcademico alerta_;    ///< Regras usadas para destacar riscos.
 };

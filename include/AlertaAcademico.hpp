@@ -35,6 +35,10 @@ std::string paraTexto(TipoAviso tipo);
 /**
  * @brief Aviso gerado pelo AlertaAcademico para uma disciplina.
  */
+// Exemplo de aviso:
+//   tipo             = TipoAviso::RiscoInfrequencia
+//   codigoDisciplina = "DCC204"
+//   mensagem         = "Você já usou 12 das 15 horas de falta permitidas."
 struct Aviso {
     TipoAviso tipo;                ///< Motivo do aviso.
     std::string codigoDisciplina;  ///< Disciplina a que o aviso se refere.
@@ -51,6 +55,9 @@ struct Aviso {
  *
  * Colaboradores: Disciplina, Avaliacao.
  */
+// Pense nesta classe como um "fiscal": ela não altera nada, só olha as
+// disciplinas e diz se há algo preocupando. Por isso quase todos os
+// métodos recebem uma disciplina como "const Disciplina&" (só leitura).
 class AlertaAcademico {
 public:
     /**
@@ -61,6 +68,9 @@ public:
      *        aviso de risco (0 a 1).
      * @throws DadoInvalidoException se algum limite estiver fora do intervalo.
      */
+    // Os três parâmetros têm valor padrão (depois do "="). Então:
+    //   AlertaAcademico alerta;               // usa as regras padrão
+    //   AlertaAcademico rigido(0.25, 70.0);   // exige 70 pontos para aprovar
     explicit AlertaAcademico(
         double percentualMaximoFaltas = regras::PERCENTUAL_MAXIMO_FALTAS,
         double notaMinimaAprovacao = regras::NOTA_MINIMA_APROVACAO,
@@ -88,6 +98,8 @@ public:
      * @return true se as faltas atingiram a fração de alerta do limite,
      *         sem ainda ultrapassá-lo.
      */
+    // Ex.: limite de 15 horas -> alerta a partir de 12 horas de falta
+    // (80% de 15), até 15. Com 16 ou mais, já é reprovação.
     bool emRiscoDeInfrequencia(const Disciplina& disciplina) const;
 
     /**
@@ -104,6 +116,8 @@ public:
      *         Se o valor for maior que Disciplina::pontosEmDisputa(), a
      *         aprovação não é mais possível.
      */
+    // Ex.: o aluno já tem 35 pontos -> precisa de mais 60 - 35 = 25.
+    // Se só restam 20 pontos em disputa, não há mais como passar.
     double pontuacaoNecessaria(const Disciplina& disciplina) const;
 
     /**
@@ -116,6 +130,9 @@ public:
      * @param disciplina Disciplina analisada.
      * @return true se houver risco.
      */
+    // Ex.: o aluno fez provas que somavam 40 pontos e tirou 20 nelas.
+    // Aproveitamento = 20 / 40 = 50%, abaixo de 60%, então há risco:
+    // mantendo esse ritmo, ele termina o semestre com 50 pontos.
     bool emRiscoPorNota(const Disciplina& disciplina) const;
 
     /**
@@ -124,6 +141,11 @@ public:
      * @return true se a nota máxima possível for menor que a nota mínima.
      */
     bool reprovadoPorNota(const Disciplina& disciplina) const;
+
+    // Os dois métodos "verificar" têm o mesmo nome, mas recebem tipos
+    // diferentes (sobrecarga). O C++ escolhe qual chamar pelo argumento:
+    //   alerta.verificar(pds2);      // avisos de uma disciplina
+    //   alerta.verificar(semestre);  // avisos de todas as disciplinas
 
     /**
      * @brief Gera todos os avisos aplicáveis a uma disciplina.

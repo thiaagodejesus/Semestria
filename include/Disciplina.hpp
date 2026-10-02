@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 
+// Disciplina usa as classes Avaliacao e Horario, então precisa incluir
+// os contratos delas. Aspas ("...") = arquivo nosso, da pasta include/;
+// sinais de menor/maior (<...>) = biblioteca padrão do C++.
 #include "Avaliacao.hpp"
 #include "Horario.hpp"
 
@@ -42,6 +45,15 @@ std::string paraTexto(Situacao situacao);
  *
  * Colaboradores: Avaliacao, Horario.
  */
+// Esta é a classe central do sistema. Uma Disciplina "TEM" várias
+// avaliações e vários horários (isso se chama composição): ela guarda
+// essas listas dentro de si e é a única responsável por elas.
+//
+// Exemplo de uso:
+//     Disciplina pds2("DCC204", "PDS II", 4, 60);  // 4 créditos, 60 h
+//     pds2.adicionarAvaliacao(Avaliacao("Prova 1", 30.0));
+//     pds2.adicionarHorario(Horario(DiaSemana::Terca, 9, 25, 11, 5));
+//     pds2.registrarFalta(2);                      // faltou 2 horas-aula
 class Disciplina {
 public:
     /**
@@ -55,9 +67,15 @@ public:
     Disciplina(const std::string& codigo, const std::string& nome,
                int creditos, int cargaHoraria);
 
+    // As linhas "@name ... @{ ... @}" só agrupam os métodos por assunto
+    // na documentação gerada pelo Doxygen; não mudam nada no código.
+
     // ----------------------------------------------------------------
     /// @name Dados cadastrais
     /// @{
+
+    // Não existe setCodigo(): o código identifica a disciplina dentro do
+    // semestre, então não pode mudar depois do cadastro.
 
     /// @return Código da disciplina.
     const std::string& getCodigo() const;
@@ -105,6 +123,8 @@ public:
      * @throws LimitePontuacaoExcedidoException se a soma dos valores das
      *         avaliações passar de 100 pontos.
      */
+    // Ex.: já existem provas de 30 + 30 + 30 = 90 pontos. Adicionar um
+    // trabalho de 20 daria 110, então lança exceção. Um de 10 é aceito.
     void adicionarAvaliacao(const Avaliacao& avaliacao);
 
     /**
@@ -124,6 +144,13 @@ public:
      * @return Referência para a avaliação encontrada.
      * @throws AvaliacaoNaoEncontradaException se não existir.
      */
+    // Por que existem duas versões de buscarAvaliacao?
+    // - A primeira devolve "Avaliacao&" (referência): é a própria avaliação
+    //   guardada aqui dentro, não uma cópia. Então, por exemplo,
+    //       pds2.buscarAvaliacao("Prova 1").registrarNota(25);
+    //   altera de verdade a nota salva na disciplina.
+    // - A segunda (com "const") é usada quando a disciplina é só para
+    //   leitura, e por isso devolve uma referência que não permite mudanças.
     Avaliacao& buscarAvaliacao(const std::string& nome);
 
     /// @copydoc buscarAvaliacao(const std::string&)
@@ -142,6 +169,19 @@ public:
 
     /// @return Todas as avaliações vinculadas, na ordem de cadastro.
     const std::vector<Avaliacao>& getAvaliacoes() const;
+
+    // Exemplo para entender os métodos de pontuação abaixo:
+    //   Prova 1 vale 30 e o aluno tirou 20  (Realizada)
+    //   Prova 2 vale 30 e ainda não aconteceu (Pendente)
+    //   Os outros 40 pontos o professor ainda não distribuiu.
+    //
+    //   pontosDistribuidos() = 30 + 30       = 60
+    //   pontosConquistados() = 20
+    //   pontosEmDisputa()    = 100 - 30      = 70  (Prova 2 + os 40 restantes)
+    //   calcularNotaFinal()  = 20
+    //   calcularNotaMaxima() = 20 + 70       = 90  (se gabaritar o resto)
+    //   Se o aluno estimar 25 na Prova 2:
+    //   calcularNotaProjetada() = 20 + 25    = 45
 
     /// @return Soma dos valores totais de todas as avaliações cadastradas.
     double pontosDistribuidos() const;
@@ -184,6 +224,16 @@ public:
     /// @name Frequência
     /// @{
 
+    // Exemplo para entender os métodos de frequência abaixo:
+    //   Disciplina de 60 horas-aula, aluno com 10 horas de falta.
+    //   limiteFaltas()      = 25% de 60       = 15
+    //   faltasRestantes()   = 15 - 10         = 5
+    //   percentualFaltas()  = 10 / 60 * 100   = 16,7%
+    //   excedeuLimiteFaltas() = false (só passa a ser true com 16 ou mais)
+    //
+    // "unsigned int" é um inteiro que nunca é negativo. Faz sentido aqui,
+    // já que ninguém tem -3 faltas.
+
     /**
      * @brief Registra faltas na disciplina.
      * @param horas Quantidade de horas-aula de falta (padrão: 1).
@@ -223,6 +273,10 @@ public:
     // ----------------------------------------------------------------
     /// @name Horários
     /// @{
+
+    // Atenção: aqui a Disciplina só confere choques entre as SUAS
+    // próprias aulas. Choques com OUTRAS disciplinas são verificados pela
+    // classe Semestre, que é quem conhece todas as disciplinas.
 
     /**
      * @brief Adiciona um horário semanal de aula.
@@ -264,6 +318,11 @@ public:
      *
      * @return Situação atual.
      */
+    // A ordem importa: quem passou do limite de faltas está reprovado
+    // mesmo com nota alta, por isso a frequência é testada primeiro.
+    // A regra 2 permite avisar a reprovação por nota antes do fim do
+    // semestre: se, mesmo gabaritando tudo o que falta, o aluno não
+    // chega a 60, o resultado já está definido.
     Situacao situacao() const;
 
 private:
@@ -272,6 +331,8 @@ private:
     int creditos_;                       ///< Número de créditos.
     int cargaHoraria_;                   ///< Carga horária em horas-aula.
     unsigned int faltas_;                ///< Faltas em horas-aula.
+    // std::vector é uma lista que cresce sozinha conforme adicionamos
+    // itens (parecido com um array, mas sem tamanho fixo).
     std::vector<Avaliacao> avaliacoes_;  ///< Avaliações vinculadas.
     std::vector<Horario> horarios_;      ///< Horários semanais de aula.
 };

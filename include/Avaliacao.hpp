@@ -13,6 +13,17 @@ namespace semestria {
 /**
  * @brief Situação de uma avaliação em relação à nota.
  */
+// Ciclo de vida de uma avaliação:
+//
+//   Pendente --definirEstimativa()--> Estimada --registrarNota()--> Realizada
+//      ^                                 |                              |
+//      +-------removerEstimativa()-------+                              |
+//      +-------------------------cancelarRegistro()---------------------+
+//
+// (registrarNota() também pode ser chamado direto de Pendente.)
+//
+// "Estimada" serve para simulações: o aluno chuta quanto acha que vai
+// tirar e o sistema mostra como ficariam a nota final e a NSG.
 enum class StatusAvaliacao {
     Pendente,  ///< Ainda não realizada e sem nota estimada.
     Estimada,  ///< Ainda não realizada, mas com nota hipotética (simulação).
@@ -35,6 +46,10 @@ std::string paraTexto(StatusAvaliacao status);
  *
  * Colaboradores: Disciplina, ValidadorAcademico.
  */
+// Exemplo de uso:
+//     Avaliacao p1("Prova 1", 30.0, "20/10/2026");  // vale 30 pontos
+//     p1.definirEstimativa(25.0);  // "acho que vou tirar 25"
+//     p1.registrarNota(22.5);      // saiu a nota oficial: 22,5
 class Avaliacao {
 public:
     /**
@@ -74,6 +89,10 @@ public:
     /// @return true se a nota atual for apenas uma estimativa.
     bool isEstimativa() const;
 
+    // Os métodos "set" alteram um dado, mas sempre validam antes. Se o
+    // valor for inválido, lançam uma exceção (ver Excecoes.hpp) e o
+    // objeto continua como estava.
+
     /**
      * @brief Altera o nome da avaliação.
      * @param nome Novo nome.
@@ -103,6 +122,7 @@ public:
      * @throws NotaInvalidaException se a nota for negativa ou maior que o
      *         valor total.
      */
+    // Ex.: numa prova de 30 pontos, registrarNota(35) lança exceção.
     void registrarNota(double nota);
 
     /**
@@ -133,6 +153,8 @@ public:
 private:
     std::string nome_;        ///< Nome descritivo.
     double valorTotal_;       ///< Pontuação máxima.
+    // Um único campo guarda a nota, seja ela oficial ou estimada; quem
+    // diz qual dos dois casos vale é o status_ logo abaixo.
     double nota_;             ///< Nota oficial ou estimada.
     std::string dataLimite_;  ///< Data limite ("DD/MM/AAAA").
     StatusAvaliacao status_;  ///< Situação da nota.

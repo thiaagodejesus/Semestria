@@ -19,6 +19,9 @@ namespace semestria {
 /**
  * @brief Descreve um choque de horário entre duas disciplinas.
  */
+// "struct" é parecido com "class", mas tudo fica público por padrão.
+// Usamos struct quando o objetivo é só agrupar alguns dados, sem regras
+// nem métodos. Aqui ele junta as informações de um choque de horário.
 struct ConflitoHorario {
     std::string codigoDisciplinaA;  ///< Código da primeira disciplina.
     std::string codigoDisciplinaB;  ///< Código da segunda disciplina.
@@ -40,6 +43,16 @@ struct ConflitoHorario {
  *
  * Colaboradores: Disciplina, Horario.
  */
+// Exemplo de cálculo da NSG:
+//   DCC204 (4 créditos), nota 80  ->  80 * 4 = 320
+//   MAT001 (6 créditos), nota 60  ->  60 * 6 = 360
+//   NSG = (320 + 360) / (4 + 6) = 680 / 10 = 68
+// Repare que a matéria com mais créditos "pesa" mais na média.
+//
+// Existem três versões da NSG, que mudam só a nota usada de cada matéria:
+//   - Atual:     só as notas oficiais (o que já está garantido);
+//   - Projetada: notas oficiais + estimativas (simulação do aluno);
+//   - Máxima:    a melhor nota que ainda dá para alcançar em cada uma.
 class Semestre {
 public:
     /**
@@ -47,6 +60,9 @@ public:
      * @param identificador Identificador do período (ex.: "2026/2").
      * @throws DadoInvalidoException se o identificador for vazio.
      */
+    // "explicit" evita conversões automáticas escondidas. Sem ele, o C++
+    // aceitaria algo como  Semestre s = "2026/2";  e criaria o objeto
+    // sem ninguém pedir. Com ele, é preciso escrever  Semestre s("2026/2");
     explicit Semestre(const std::string& identificador);
 
     /// @return Identificador do período.
@@ -83,6 +99,9 @@ public:
      * @return Referência para a disciplina encontrada.
      * @throws DisciplinaNaoEncontradaException se não existir.
      */
+    // Mesma ideia de Disciplina::buscarAvaliacao: a versão sem "const"
+    // devolve a disciplina original (para lançar notas, faltas etc.) e a
+    // versão com "const" serve só para leitura.
     Disciplina& buscarDisciplina(const std::string& codigo);
 
     /// @copydoc buscarDisciplina(const std::string&)
@@ -97,6 +116,9 @@ public:
 
     /// @return Disciplinas do semestre, na ordem de cadastro.
     const std::vector<Disciplina>& getDisciplinas() const;
+
+    // std::size_t é o tipo que o C++ usa para tamanhos e quantidades
+    // (um inteiro sem sinal); é o mesmo tipo que vector::size() devolve.
 
     /// @return Quantidade de disciplinas cadastradas.
     std::size_t quantidadeDisciplinas() const;
@@ -122,6 +144,8 @@ public:
      * @return Pares (código da disciplina, horário) ordenados por dia e
      *         horário de início.
      */
+    // std::pair junta dois valores em um só. Cada item da lista é algo
+    // como ("DCC204", Terça 09:25-11:05); first = código, second = horário.
     std::vector<std::pair<std::string, Horario>> gradeSemanal() const;
 
     /// @}

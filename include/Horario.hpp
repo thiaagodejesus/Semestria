@@ -13,6 +13,10 @@ namespace semestria {
 /**
  * @brief Dias da semana em que uma aula pode ocorrer.
  */
+// "enum class" é uma lista fechada de opções. Em vez de guardar o dia
+// como texto ("segunda", "Segunda", "seg"...), o que abre espaço para
+// erro de digitação, usamos DiaSemana::Segunda, DiaSemana::Terca etc.
+// O compilador recusa qualquer valor que não esteja na lista.
 enum class DiaSemana {
     Domingo,
     Segunda,
@@ -28,6 +32,9 @@ enum class DiaSemana {
  * @param dia Dia da semana.
  * @return Nome do dia em português.
  */
+// Função "solta", fora de qualquer classe. Outros arquivos têm funções
+// paraTexto() para outros enums; o compilador escolhe a certa pelo tipo
+// do parâmetro (isso se chama sobrecarga).
 std::string paraTexto(DiaSemana dia);
 
 /**
@@ -39,7 +46,15 @@ std::string paraTexto(DiaSemana dia);
  *
  * Colaboradores: Disciplina, Semestre.
  */
+// Exemplo de uso:
+//     Horario aula(DiaSemana::Segunda, 7, 30, 9, 10, "ICEx 2004");
+//     // representa: segunda-feira, das 07:30 às 09:10, na sala ICEx 2004
 class Horario {
+// "public" = o que qualquer parte do programa pode usar.
+// "private" (lá embaixo) = os dados internos, que só a própria classe
+// mexe. Isso é o ENCAPSULAMENTO: ninguém consegue, por exemplo, criar
+// uma aula que termina antes de começar, porque todo dado passa pelos
+// métodos, que validam antes de aceitar.
 public:
     /**
      * @brief Cria um horário de aula.
@@ -52,8 +67,14 @@ public:
      * @throws HorarioInvalidoException se alguma hora/minuto estiver fora do
      *         intervalo ou se o término não for posterior ao início.
      */
+    // Este é o CONSTRUTOR: roda automaticamente quando um Horario é
+    // criado. O trecho  = ""  no último parâmetro o torna opcional: se a
+    // sala não for informada, ela fica vazia.
     Horario(DiaSemana dia, int horaInicio, int minutoInicio,
             int horaFim, int minutoFim, const std::string& sala = "");
+
+    // Os métodos "get" só devolvem um dado guardado. O "const" depois dos
+    // parênteses é uma promessa: este método não altera o objeto.
 
     /// @return Dia da semana da aula.
     DiaSemana getDia() const;
@@ -79,6 +100,10 @@ public:
      */
     void setSala(const std::string& sala);
 
+    // Converter para "minutos desde a meia-noite" facilita as contas:
+    // 07:30 vira 7*60 + 30 = 450 e 09:10 vira 550. Comparar dois números
+    // é bem mais simples do que comparar horas e minutos separados.
+
     /// @return Início da aula em minutos desde 00:00.
     int inicioEmMinutos() const;
 
@@ -98,6 +123,10 @@ public:
      * @param outro Horário a ser comparado.
      * @return true se houver sobreposição.
      */
+    // Exemplos (todos na segunda-feira):
+    //   07:30-09:10 e 08:00-09:40 -> colidem (uma começa antes da outra acabar)
+    //   07:30-09:10 e 09:10-10:50 -> NÃO colidem (só encostam)
+    //   07:30-09:10 na segunda e 07:30-09:10 na terça -> NÃO colidem
     bool colideCom(const Horario& outro) const;
 
     /**
@@ -105,6 +134,10 @@ public:
      * @return Texto no formato "Segunda 07:30-09:10 (sala)".
      */
     std::string toString() const;
+
+    // Os dois métodos "operator" abaixo ensinam o C++ a usar < e == com
+    // objetos Horario. O "<" permite ordenar a grade da semana com
+    // std::sort; o "==" permite achar um horário específico numa lista.
 
     /**
      * @brief Ordena horários por dia da semana e, depois, por início.
@@ -121,6 +154,8 @@ public:
     bool operator==(const Horario& outro) const;
 
 private:
+    // Atributos (os dados que cada objeto guarda). Usamos o "_" no final
+    // do nome para diferenciar atributos de parâmetros e variáveis locais.
     DiaSemana dia_;       ///< Dia da semana da aula.
     int horaInicio_;      ///< Hora de início.
     int minutoInicio_;    ///< Minuto de início.

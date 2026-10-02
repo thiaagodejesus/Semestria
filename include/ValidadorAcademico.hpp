@@ -18,9 +18,24 @@ namespace semestria {
  * estado. Os métodos apenas respondem se o dado é válido; cabe a quem
  * chama decidir qual exceção lançar.
  */
+// Esta classe é só uma "caixa de ferramentas": não guarda dados, apenas
+// responde perguntas do tipo "esse valor é aceitável?". As outras
+// classes perguntam aqui antes de aceitar um dado. Assim, a regra de
+// cada validação fica escrita em um lugar só.
 class ValidadorAcademico {
 public:
+    // "= delete" proíbe criar objetos desta classe
+    // (ValidadorAcademico v; não compila), porque não faria sentido:
+    // ela não tem dados próprios.
     ValidadorAcademico() = delete;
+
+    // "static" significa que o método é chamado direto pelo nome da
+    // classe, sem precisar de um objeto. Exemplo:
+    //     if (!ValidadorAcademico::notaValida(nota, 30.0)) { ... }
+    //
+    // "const std::string&" aparece muito no projeto: o "&" (referência)
+    // evita copiar o texto inteiro só para lê-lo, e o "const" garante
+    // que a função não vai alterar o texto recebido.
 
     /**
      * @brief Verifica se um texto (nome, sala etc.) não é vazio.
@@ -83,6 +98,7 @@ public:
      * @param data Data a ser verificada.
      * @return true se a data for válida.
      */
+    // Exemplos: "15/10/2026" é válida; "31/02/2026" e "2026-10-15" não são.
     static bool dataValida(const std::string& data);
 };
 

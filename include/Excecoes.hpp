@@ -8,6 +8,36 @@
  * em particular.
  */
 
+// O QUE É UMA EXCEÇÃO?
+// É o jeito do C++ de avisar "deu errado, não dá para continuar".
+// Quem detecta o problema faz "throw" (lança) e quem chamou faz "catch"
+// (captura) para mostrar uma mensagem amigável em vez de travar. Exemplo:
+//
+//     try {
+//         avaliacao.registrarNota(120);   // vale só 100 -> lança exceção
+//     } catch (const NotaInvalidaException& e) {
+//         std::cout << "Erro: " << e.what() << std::endl;
+//     }
+//
+// Árvore das exceções deste arquivo (a seta lê-se "é um tipo de"):
+//
+//   std::runtime_error              (já vem pronta no C++)
+//    └── SemestriaException         (base de todos os erros do projeto)
+//         ├── DadoInvalidoException
+//         │    ├── NotaInvalidaException
+//         │    └── HorarioInvalidoException
+//         ├── DisciplinaDuplicadaException
+//         ├── DisciplinaNaoEncontradaException
+//         ├── AvaliacaoDuplicadaException
+//         ├── AvaliacaoNaoEncontradaException
+//         ├── LimitePontuacaoExcedidoException
+//         ├── ConflitoHorarioException
+//         └── ArquivoException
+//
+// Vantagem da árvore (herança): um "catch (const SemestriaException& e)"
+// captura QUALQUER erro do projeto, enquanto um catch de uma classe mais
+// específica captura só aquele caso.
+
 #ifndef SEMESTRIA_EXCECOES_HPP
 #define SEMESTRIA_EXCECOES_HPP
 
@@ -19,8 +49,14 @@ namespace semestria {
 /**
  * @brief Classe base de todas as exceções do Semestria.
  */
+// ": public std::runtime_error" é herança: SemestriaException herda tudo
+// de runtime_error, inclusive o método what(), que devolve a mensagem.
 class SemestriaException : public std::runtime_error {
 public:
+    // Esta linha reaproveita o construtor da classe mãe, que recebe a
+    // mensagem de erro. Por isso dá para escrever, por exemplo:
+    //     throw SemestriaException("mensagem explicando o erro");
+    // As classes abaixo usam a mesma ideia, cada uma com a sua mãe.
     using std::runtime_error::runtime_error;
 };
 
