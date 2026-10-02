@@ -8,8 +8,8 @@ Projeto final da disciplina **Programação e Desenvolvimento de Software II (PD
 
 | Nome | Matrícula |
 | --- | --- |
-| Eduarda Lanna | 2024110945 |
-| Flávio Jach Maia | 2026020340 |
+| Flavio Jach Maia | 2026020340 |
+| Lanna Eduarda Andrade Florentino | 2024110945 |
 | Leonardo Matheus Rodrigues Pereira | 2026019872 |
 | Lucas Netto Brando Coutinho | 2022059950 |
 | Thiago Abreu de Jesus | 2025019909 |
