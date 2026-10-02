@@ -1,0 +1,59 @@
+# Configuração do Doxygen para o Semestria.
+# Gere a documentação a partir da raiz do repositório com:
+#     doxygen Doxyfile
+# O resultado fica em docs/html/index.html.
+# As opções omitidas usam os valores padrão do Doxygen.
+
+#---------------------------------------------------------------------------
+# Projeto
+#---------------------------------------------------------------------------
+PROJECT_NAME           = "Semestria"
+PROJECT_BRIEF          = "Sistema de acompanhamento acadêmico: disciplinas, horários, faltas, notas e projeção da NSG"
+PROJECT_NUMBER         = 0.1
+OUTPUT_DIRECTORY       = docs
+OUTPUT_LANGUAGE        = Brazilian
+MARKDOWN_SUPPORT       = YES
+JAVADOC_AUTOBRIEF      = NO
+BUILTIN_STL_SUPPORT    = YES
+
+#---------------------------------------------------------------------------
+# O que extrair
+#---------------------------------------------------------------------------
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+SORT_MEMBER_DOCS       = NO
+
+#---------------------------------------------------------------------------
+# Avisos
+#---------------------------------------------------------------------------
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES
+
+#---------------------------------------------------------------------------
+# Arquivos de entrada
+#---------------------------------------------------------------------------
+INPUT                  = README.md \
+                         include \
+                         src \
+                         design/user_stories.md
+INPUT_ENCODING         = UTF-8
+FILE_PATTERNS          = *.hpp \
+                         *.cpp \
+                         *.md
+RECURSIVE              = YES
+USE_MDFILE_AS_MAINPAGE = README.md
+
+#---------------------------------------------------------------------------
+# Saída
+#---------------------------------------------------------------------------
+SOURCE_BROWSER         = YES
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_TREEVIEW      = YES
+USE_MATHJAX            = NO
+GENERATE_LATEX         = NO
+HAVE_DOT               = NO
