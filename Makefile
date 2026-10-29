@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -I include/ -I tests/
+CXXFLAGS = -std=gnu++11 -Wall -I include/ -I tests/ -DDOCTEST_CONFIG_NO_MULTITHREADING
 LDFLAGS =
 
 SRC_DIR = src
@@ -14,7 +14,7 @@ TEST_OBJ_FILES = $(patsubst $(TEST_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(TEST_FILES))
 
 TEST_EXEC = test_runner
 
-.PHONY: all clean run dirs
+.PHONY: all clean run test dirs
 
 all: dirs $(TEST_EXEC)
 
@@ -28,9 +28,11 @@ $(BUILD_DIR)/%.o: $(TEST_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 dirs:
-	@mkdir -p $(BUILD_DIR)
+	-@mkdir -p $(BUILD_DIR)
 
 run: all
+	./$(TEST_EXEC)
+test: all
 	./$(TEST_EXEC)
 
 clean:
